@@ -1,0 +1,22 @@
+type: Drill
+category: production
+health: 60
+size: 2
+tier: 1
+drillTime: 200
+itemCapacity: 20
+rotateSpeed: 2.5
+warmupSpeed: 0.001
+liquidBoostIntensity: 1.1
+liquidCapacity: 5
+consumes: {
+  liquid: {
+    liquid: water
+    amount: 0.05
+    optional: true
+    booster: true
+  }
+}
+requirements: [
+  ice-fragments/40
+]

@@ -1,0 +1,47 @@
+type: GenericCrafter
+category: crafting
+size: 3
+craftTime: 90
+health: 320
+itemCapacity: 20
+liquidCapacity: 40
+consumes: {
+  items: [
+    phosphorus/4
+  ]
+  liquids: [
+    water/0.5
+  ]
+}
+outputLiquid: liquid-phosphorus/0.3
+drawer: {
+  type: DrawMulti
+  drawers: [
+    {
+      type: DrawRegion
+      suffix: -bottom
+    }
+    {
+      type: DrawLiquidTile
+      drawLiquid: liquid-phosphorus
+      padding: 3
+    }
+    {
+      type: DrawDefault
+    }
+    {
+      type: DrawPulseShape
+      color: ff6a00
+      stroke: 2.5
+      radiusScl: 4
+      timeScl: 100
+      minStroke: 0.5
+      layer: 30
+    }
+  ]
+}
+requirements: [
+  silicon/80
+  titanium/60
+  metaglass/40
+]

@@ -1,0 +1,46 @@
+type: ItemTurret
+category: turret
+health: 850
+size: 2
+range: 150
+reload: 45
+maxAmmo: 10
+shootEffect: {
+  type: ParticleEffect
+  particles: 8
+  lifetime: 25
+  sizeFrom: 3
+  colorFrom: ab753e
+}
+ammoTypes: {
+  phosphorus: {
+  type: FlakBulletType
+  damage: 15
+  //splashDamage: 15
+  splashDamageRadius: 4
+  status: "burning"
+  statusDuration: 120
+  lifetime: 60
+  speed: 3
+  fragBullet: {
+    type: BasicBulletType
+    damage: 5
+    splashDamage: 5
+    splashDamageRadius: 3
+    status: "burning"
+    statusDuration: 60
+    lifetime: 30
+    speed: 2
+    hitEffect: unitDrop
+    despawnEffect: unitDrop
+  }
+  fragBullets: 8
+  fragSpread: 360
+  hitEffect: unitDrop
+  despawnEffect: unitDrop
+  buildingDamageMultiplier: 0.5
+  }
+}
+requirements: [
+  phosphorus/50
+]

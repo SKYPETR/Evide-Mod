@@ -1,0 +1,6 @@
+name: "tests"
+displayName: "tests"
+author: "skypetr"
+description: "да тест"
+version: "0.0.1"
+minGameVersion: "154.1"

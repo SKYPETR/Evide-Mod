@@ -1,0 +1,12 @@
+type: Liquid
+color: ff6a00
+temperature: 0.8
+viscosity: 0.7
+flammability: 0.9
+explosiveness: 0.8
+heatCapacity: 0.4
+effect: "burning"
+//effectDuration: 60
+lightColor: ff4400
+barColor: ff6a00
+coolant: false

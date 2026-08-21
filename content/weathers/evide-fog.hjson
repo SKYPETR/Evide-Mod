@@ -1,0 +1,16 @@
+type: ParticleWeather
+noiseColor: d3d3d3
+drawNoise: true
+particleRegion: "particle"
+useWindVector: true
+sizeMax: 0.8
+sizeMin: 0.3
+minAlpha: 0.7
+maxAlpha: 0.4
+density: 3000
+baseSpeed: 0.4
+opacityMultiplier: 0.5
+sound: "wind"
+soundVol: 0.3
+status: "freezing"
+statusDuration: 60
