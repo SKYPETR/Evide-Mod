@@ -1,4 +1,3 @@
-type: Drill
 category: production
 health: 60
 size: 2
@@ -18,5 +17,5 @@ consumes: {
   }
 }
 requirements: [
-  ice-fragments/40
+  icy-plate/40
 ]
