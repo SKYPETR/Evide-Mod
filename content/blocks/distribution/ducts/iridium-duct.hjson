@@ -10,7 +10,6 @@ underBullets: false
   displayedSpeed: 1   
   health: 35
   acceptsItems: true
-requirements: 
+requirements: [
 iridium/1
-researchCostMultiplier: 1
-﻿
+]
