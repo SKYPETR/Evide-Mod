@@ -9,3 +9,4 @@ let OverdriveDrill = new UndergroundDrill("overdrive-drill")
 
 let OreRadarSmall = new OreRadar("ore-radar-small", 15 * 6, 20, 0.6, Color.valueOf("9aabff"), 1, 1)
 OreRadarSmall.size = 2
+OreRadarSmall.buildVisibility = BuildVisibility.shown
