@@ -1,4 +1,0 @@
-type: StaticWall
-attributes: {
-  water: 1
-}

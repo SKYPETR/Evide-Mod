@@ -4,7 +4,7 @@ Events.on(ClientLoadEvent, () => {
 	const MAX_CHANCE = 0.30;
 	const REPLACE_INTERVAL = 120;
 	const TILES_PER_TICK = 10;
-	const STORM_NAME = "tests-snow-storm";
+	const STORM_NAME = "evide-snow-storm";
 
 	const snowFloor = [Vars.content.block("snow").asFloor(), Vars.content.block("snow").asFloor()];
 
@@ -13,14 +13,13 @@ Events.on(ClientLoadEvent, () => {
 	let snowIndex = 0;
 	let currentChance = 0;
 	let isStorming = false;
-	let timerStats = false;
 	let timer = 0;
 
 	function isStormActive()
 	{
 		if(Vars.content.weather(STORM_NAME).isActive())return true;
 		return false;
-    }
+  }
 
 	function collectAllTiles()
 	{
@@ -69,7 +68,7 @@ Events.on(ClientLoadEvent, () => {
 		{
 			let tile = snowTiles[i];
 			let conditionF = tile.floor().liquidDrop == null;
-			let conditionB = tile.block() != Vars.content.block("tests-iced-dark-metal");
+			let conditionB = tile.block() != Vars.content.block("evide-icy-metal-wall");
 			
 			if(tile != null && conditionF)
 			{
@@ -82,7 +81,7 @@ Events.on(ClientLoadEvent, () => {
 				tile.setBlock(Vars.content.block("snow-wall"));
 			}
 			
-			if(tile.block() instanceof StaticProp && tile.team() == "derelict")
+			if(tile.block() instanceof StaticProp && tile.team() == "derelict" && conditionB)
 			{
 				tile.setBlock(Vars.content.block("snow-boulder"));
 			}
@@ -136,21 +135,17 @@ Events.on(ClientLoadEvent, () => {
 		snowIndex = 0;
 		currentChance = 0;
 	}
-
-	Events.on(WorldLoadEvent,()=>{
-    	Timer.schedule(()=>timerStats=true,2);
-	})
+	
+	Vars.ui.content.show(Vars.content.block("evide-overdrive-drill"));
+	Vars.ui.content.hide();
 
 	Events.run(Trigger.update, () => {
+		let block = Vars.content.block("evide-overdrive-drill");
+		if(Vars.state.isPlaying())
+		{
+			if(isStormActive())block.drillTime = 250;		
+			else block.drillTime = 200;
 		
-		let block = Vars.content.block("tests-overdrive-drill");
-		
-		if(isStormActive())block.drillTime = 250;		
-		else block.drillTime = 200;
-		
-		block.stats.remove(Stat.drillSpeed);
-	
-		if(timerStats){
 			block.stats.replace(Stat.drillSpeed, StatValues.number(60 / block.drillTime * block.size * block.size, StatUnit.itemsSecond));
 		}
 	})
