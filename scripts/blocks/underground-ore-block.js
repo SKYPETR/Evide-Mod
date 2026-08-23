@@ -1,3 +1,11 @@
+/*
+ * Copyright (C) 2026 FoksT4on
+ * This script is based on code from the project: https://github.com/TeamOct/FOS.
+ * The source code is available at: https://github.com/TeamOct/FOS/blob/master/src/fos/world/blocks/environment/UndergroundOreBlock.java.
+ * The license of the original code: GPL-3.0.
+ * This script is distributed under the same license: GPL-3.0.
+ */
+
 function UndergroundOreBlock(name, item, dep)
 {
 	let depth = dep
