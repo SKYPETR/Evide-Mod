@@ -4,7 +4,7 @@ health: 3000
 armor: 12
 unitType: alpha
 requirements: [
- ice-fragments/250
+ icy-plate/250
  iridium/750
 ]
 requiresCoreZone: true
