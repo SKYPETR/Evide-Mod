@@ -1,3 +1,11 @@
+/*
+ * Copyright (C) 2026 FoksT4on
+ * This script is based on code from the project: https://github.com/TeamOct/FOS.
+ * The source code is available at: https://github.com/TeamOct/FOS/blob/master/src/fos/world/blocks/production/OreDetector.java.
+ * The license of the original code: GPL-3.0.
+ * This script is distributed under the same license: GPL-3.0.
+ */
+
 function OreRadar(name, ran, radCone, spd, col, dem, tr)
 {
 	let block = extend(Block, name, {
@@ -17,7 +25,6 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 		drawer: new DrawMulti([
 			new DrawDefault(),
 			extend(DrawGlowRegion, Layer.block, {
-        suffix: "-glow",
 				color: col
 			})
 		]),
@@ -73,11 +80,10 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
       return block.range * this.potentialEfficiency;
     },
 
-    //Disabled because it is not used
-    //warmup()
-		//{
-    //  return this.showOres ? this.efficiency : 0;
-    //},
+    warmup()
+		{
+      return this.efficiency;
+    },
 
     eyeIcon()
 		{

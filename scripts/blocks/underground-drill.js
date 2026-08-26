@@ -1,3 +1,11 @@
+/*
+ * Copyright (C) 2026 FoksT4on
+ * This script is based on code from the project: https://github.com/TeamOct/FOS.
+ * The source code is available at: https://github.com/TeamOct/FOS/blob/master/src/fos/world/blocks/production/UndergroundDrill.java.
+ * The license of the original code: GPL-3.0.
+ * This script is distributed under the same license: GPL-3.0.
+ */
+
 function UndergroundDrill(name)
 {
 	let block = extend(Drill, name, {
@@ -25,7 +33,7 @@ function UndergroundDrill(name)
 			{
 				let block = tile.build;
 			
-				return (block != null && (block.block() instanceof Drill) && (typeof block.block.UD === "function") && block.team == team) ||
+				return (block != null && (block.block instanceof Drill) && (typeof block.block.UD === "function") && block.team == team) ||
 					this.nearestDetector(team, tile.worldx(), tile.worldy()) != null;
 			}
 		},
@@ -284,9 +292,8 @@ function UndergroundDrill(name)
                 this.warmup = Mathf.approachDelta(this.warmup, speed, block.warmupSpeed);
                 this.progress += this.delta() * this.dominantItems * speed * this.warmup;
 				
-                //Disabled because it is not working
-                //if(Mathf.chanceDelta(block.updateEffectChance * this.warmup))
-                    //this.updateEffect.at(x * 8 + Mathf.range(block.size * 2), y * 8 + Mathf.range(block.size * 2));
+                if(Mathf.chanceDelta(block.updateEffectChance * this.warmup))
+                    block.updateEffect.at(x * 8 + 4 + Mathf.range(block.size * 2), y * 8 + 4 + Mathf.range(block.size * 2));
             }
 			else
 			{
@@ -301,8 +308,8 @@ function UndergroundDrill(name)
 
                 this.progress %= delay;
 
-                //Disabled because it is not working
-                //if(this.wasVisible && Mathf.chanceDelta(block.drillEffectChance * this.warmup)) //block.drillEffect.at(x + Mathf.range(block.drillEffectRnd), y + Mathf.range(block.drillEffectRnd), this.tileOn().floor().mapColor);
+                if(this.wasVisible && Mathf.chanceDelta(block.drillEffectChance * this.warmup))
+                    block.drillEffect.at(x * 8 + 4 + Mathf.range(block.drillEffectRnd), y * 8 + 4 + Mathf.range(block.drillEffectRnd), this.tileOn().floor().mapColor);
             }
         },
 
@@ -317,12 +324,10 @@ function UndergroundDrill(name)
 
         draw()
 		{
-			let x = this.tile.x
-			let y = this.tile.y
             this.super$draw();
 
             Draw.color(this.dominantItem.color);
-            Draw.rect(block.itemRegion, x, y);
+            Draw.rect(block.itemRegion, this.x, this.y);
             Draw.color();
         },
 

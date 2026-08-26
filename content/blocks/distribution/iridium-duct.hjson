@@ -1,0 +1,7 @@
+type: Duct
+category: distribution
+health: 35
+speed: 10
+requirements: [
+  iridium/1
+]

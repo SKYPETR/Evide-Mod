@@ -36,7 +36,7 @@ drawer: {
       radiusScl: 4
       timeScl: 100
       minStroke: 0.5
-      layer: 30
+      layer: 140
     }
   ]
 }
