@@ -1,0 +1,11 @@
+name: "Iridium Router"
+description: "Distributes items in different directions."
+category: distribution
+health: 65
+size: 1
+capacity: 2
+requirements: [
+	iridium/2
+]
+research: iridium-duct
+researchCostMultiplier: 0.25
