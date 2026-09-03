@@ -1,23 +1,16 @@
 type: CoreBlock
+category: effect
 size: 4
 health: 3000
 armor: 12
-unitType: alpha
+unitType: beta
 requirements: [
- icy-plate/250
+ steel-plate/1250
  iridium/750
 ]
 requiresCoreZone: true
 incinerateNonBuildable: true
-category: effect
-isFirstTier: true
 squareSprite: false
 alwaysUnlocked: true
 itemCapacity: 3000
-unitCapModifier: 18
-research: {
-  planet: evide
-  root: true
-  name: Evide
-  requiresUnlock: false
-}
+unitCapModifier: 14

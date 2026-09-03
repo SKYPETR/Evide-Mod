@@ -1,14 +1,8 @@
-name: "Inverted Iridium Sorter"
-description: "The selected item comes out from the side."
-squareSprite: false
+type: Sorter
 category: distribution
-size: 1
+squareSprite: false
 health: 60
 invert: true
-
 requirements: [
   iridium/8
-] 
-
-researchCostMultiplier: 0.25
-research: iridium-sorter
+]

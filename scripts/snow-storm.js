@@ -19,7 +19,7 @@ Events.on(ClientLoadEvent, () => {
 	{
 		if(Vars.content.weather(STORM_NAME).isActive())return true;
 		return false;
-  }
+	}
 
 	function collectAllTiles()
 	{
@@ -68,7 +68,7 @@ Events.on(ClientLoadEvent, () => {
 		{
 			let tile = snowTiles[i];
 			let conditionF = tile.floor().liquidDrop == null;
-			let conditionB = tile.block() != Vars.content.block("evide-icy-metal-wall");
+			let conditionB = tile.block() != Vars.content.block("evide-icy-steel-wall");
 			
 			if(tile != null && conditionF)
 			{

@@ -43,27 +43,27 @@ function UndergroundOreBlock(name, item, dep)
 
 		load()
 		{
-      this.super$load();
-        	
-      if(this.itemDrop != null)
-      {
-        this.drop = this.itemDrop;
-        this.itemDrop = null;
-      }
-    },
-
-    drawBase(tile)
-		{
-      if(tile.overlay().getSDB() || Vars.state.isEditor())
+			this.super$load();
+  	
+			if(this.itemDrop != null)
 			{
-        let l = Draw.z();
-        Draw.z(Layer.light);
+				this.drop = this.itemDrop;
+				this.itemDrop = null;
+			}
+		},
 
-        this.super$drawBase(tile);
-
-        Draw.z(l);
-      }
-    }
+		drawBase(tile)
+		{
+			if(tile.overlay().getSDB() || Vars.state.isEditor())
+			{
+				let l = Draw.z();
+				Draw.z(Layer.light);
+				
+				this.super$drawBase(tile);
+				
+				Draw.z(l);
+			}
+		}
 	})
 	return block
 }

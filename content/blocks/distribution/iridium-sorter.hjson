@@ -1,13 +1,7 @@
-name: "Iridium sorter"
-description: "Standart sorter"
-squareSprite: false
+type: Sorter
 category: distribution
-size: 1
+squareSprite: false
 health: 60
-
 requirements: [
 	iridium/6
-] 
-
-researchCostMultiplier: 0.25
-research: iridium-router
+]

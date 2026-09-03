@@ -1,11 +1,8 @@
-name: "Iridium Junction"
-description: "Allows for crossing two pipelines."
+type: Junction
+category: distribution
 health: 50
-size: 1
 speed: 8
+capacity: 2
 requirements: [
 	iridium/2
 ]
-category: distribution
-research: iridium-router
-researchCostMultiplier: 0.25

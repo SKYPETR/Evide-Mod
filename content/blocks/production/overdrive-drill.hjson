@@ -1,5 +1,5 @@
 category: production
-health: 60
+health: 200
 size: 2
 tier: 1
 drillTime: 200
@@ -17,5 +17,5 @@ consumes: {
   }
 }
 requirements: [
-  icy-plate/40
+  steel-plate/60
 ]

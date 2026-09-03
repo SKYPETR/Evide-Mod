@@ -4,7 +4,7 @@ size: 3
 craftTime: 90
 health: 320
 itemCapacity: 20
-liquidCapacity: 40
+liquidCapacity: 60
 consumes: {
   items: [
     phosphorus/4
@@ -41,7 +41,6 @@ drawer: {
   ]
 }
 requirements: [
-  silicon/80
-  titanium/60
-  metaglass/40
+  steel-plate/100,
+  iridium/80
 ]

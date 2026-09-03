@@ -42,5 +42,7 @@ ammoTypes: {
   }
 }
 requirements: [
+  steel-plate/120,
+  iridium/20,
   phosphorus/50
 ]
