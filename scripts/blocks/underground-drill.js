@@ -214,12 +214,6 @@ function UndergroundDrill(name)
                                         .left()
                                         .scaling(Scaling.fit);
 
-                                        b.image(uo.getD().uiIcon)
-                                        .size(40)
-                                        .pad(10)
-                                        .left()
-                                        .scaling(Scaling.fit);
-
                                         b.table(new JavaAdapter(Cons, {
                                             get(info)
                                             {
@@ -228,6 +222,10 @@ function UndergroundDrill(name)
                                                 info.add(uo.localizedName)
                                                 .left()
                                                 .row();
+
+                                                info.add("")
+                                                .with(l => { return StatValues.withTooltip(l, uo.getD()) })
+                                                .left();
                                             }
                                         })).grow();
 

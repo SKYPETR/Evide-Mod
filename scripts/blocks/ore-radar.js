@@ -8,14 +8,14 @@
 
 function OreRadar(name, ran, radCone, spd, col, dem, tr)
 {
-	let block = extend(Block, name, {
+  let block = extend(Block, name, {
     range: ran,
     radarCone: radCone,
     speed: spd,
     effectColor: col,
     drillEfficiencyMultiplier: dem,
     tier: tr,
-
+    
     solid: true,
     update: true,
     configurable: true,

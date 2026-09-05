@@ -1,3 +1,6 @@
+let { EItems } = require("items")
+let { EBlocks } = require("blocks")
+
 Events.on(ClientLoadEvent, () => {
   let node = TechTree.node;
   let nodeRoot = TechTree.nodeRoot;
@@ -18,8 +21,8 @@ Events.on(ClientLoadEvent, () => {
     })
     
     new node(Vars.content.block("evide-steel-plasma-bore"), () => {
-      new node(Vars.content.block("evide-ore-radar-small"), () => {
-        new node(Vars.content.block("evide-overdrive-drill"), () => {})
+      new node(EBlocks.oreRadarSmall, () => {
+        new node(EBlocks.overdriveDrill, () => {})
       })
     })
 
@@ -27,15 +30,15 @@ Events.on(ClientLoadEvent, () => {
     
     new node(Vars.content.block("evide-arsonist"), () => {})
     
-    new nodeProduce(Vars.content.item("evide-steel-plate"), () => {
-      new nodeProduce(Vars.content.item("evide-phosphorus"), () => {
+    new nodeProduce(EItems.steelPlate, () => {
+      new nodeProduce(EItems.phosphorus, () => {
         new nodeProduce(Vars.content.liquid("evide-liquid-phosphorus"), () => {})
       })
-      new nodeProduce(Vars.content.item("evide-iridium"), () => {
-        new nodeProduce(Vars.content.item("evide-ice"), () => {
-          new nodeProduce(Vars.content.liquid("water"), () => {})
-        })
+      new nodeProduce(EItems.iridium, () => {})
+      new nodeProduce(EItems.ice, () => {
+        new nodeProduce(Liquids.water, () => {})
       })
+      new nodeProduce(Items.sand, () => {})
     })
   })
 })
