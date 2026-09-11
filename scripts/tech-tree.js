@@ -15,7 +15,7 @@ Events.on(ClientLoadEvent, () => {
           new node(Vars.content.block("evide-iridium-sorter"), () => {
             new node(Vars.content.block("evide-iridium-inverted-sorter"), () => {})
           })
-          new node(Vars.content.block("evide-iridium-bridge"), () => {})
+          new node(Vars.content.block("evide-iridium-duct-bridge"), () => {})
         })
       })
     })
