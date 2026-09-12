@@ -1,12 +1,10 @@
 type: BeamDrill
 category: production
 size: 2
-drillTime: 320
+drillTime: 360
+itemCapacity: 16
 range: 3
 squareSprite: false
 requirements: [
   steel-plate/25
 ]
-consumes: {
-  power: 1
-}

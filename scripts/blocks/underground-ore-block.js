@@ -6,14 +6,13 @@
  * This script is distributed under the same license: GPL-3.0.
  */
 
-function UndergroundOreBlock(name, item, dep)
+function UndergroundOreBlock(name, item, depth)
 {
-	let depth = dep
-
 	let block = extend(OverlayFloor, name, {
+		dep: depth,
 		drop: item,
 		shouldDrawBase: false,
-		
+
 		needsSurface: false,
 		useColor: false,
 		playerUnmineable: true,
@@ -28,14 +27,14 @@ function UndergroundOreBlock(name, item, dep)
 
 		getDepth()
 		{
-			return depth
+			return this.dep
 		},
-		
+
 		getSDB()
 		{
 			return this.shouldDrawBase
 		},
-		
+
 		setSDB(value)
 		{
 			this.shouldDrawBase = value
@@ -44,7 +43,7 @@ function UndergroundOreBlock(name, item, dep)
 		load()
 		{
 			this.super$load();
-  	
+
 			if(this.itemDrop != null)
 			{
 				this.drop = this.itemDrop;
@@ -58,9 +57,9 @@ function UndergroundOreBlock(name, item, dep)
 			{
 				let l = Draw.z();
 				Draw.z(Layer.light);
-				
+
 				this.super$drawBase(tile);
-				
+
 				Draw.z(l);
 			}
 		}
