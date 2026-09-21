@@ -8,54 +8,70 @@
 
 let { customDrillables } = require("stats")
 
+const comp = method => new java.util.Comparator(){compare: method};
+const intComp = (int1, int2) => java.lang.Integer.compare(int1, int2);
+const boolComp = (bool1, bool2) => java.lang.Boolean.compare(bool1, bool2);
+
 function UndergroundDrill(name)
 {
 	let block = extend(Drill, name, {
 		drillTime: 360,
 		schematicPriority: -5,
-		drawMineItem: false,
 
 		UD(){},
 
+		isValidTarget(tile)
+		{
+			return this.canMine(tile) || tile.overlay() == Blocks.air || tile.overlay().itemDrop != null;
+		},
+
+		radarFor(tile, team)
+		{
+			return this.isValidTarget(tile) ? this.nearestRadar(team, tile.worldx(), tile.worldy()) : null;
+		},
+
 		canPlaceOn(tile, team, rotation)
 		{
-			if(this.isMultiblock())
+			let tiles = tile.getLinkedTilesAs(this, this.tempTiles);
+			for(let t of tiles.toArray())
 			{
-				let tiles = tile.getLinkedTilesAs(this, this.tempTiles);
-				for(let other of tiles.toArray())
-				{
-					let build = other.build;
-					if(build != null && (build.block instanceof Drill) && (typeof build.block.UD === "function") && build.team == team)return true;
-				}
-				return this.nearestDetector(team, tile.worldx(), tile.worldy()) != null;
+				if(this.radarFor(t, team) != null)return true;
 			}
-			else
-			{
-				let build = tile.build;
-				return (build != null && (build.block instanceof Drill) && (typeof build.block.UD === "function") && build.team == team) ||
-					this.nearestDetector(team, tile.worldx(), tile.worldy()) != null;
-			}
+			return false;
 		},
 
 		drawPlace(x, y, rotation, valid)
 		{
+			let _x = x * Vars.tilesize + this.offset;
+			let _y = y * Vars.tilesize + this.offset;
 			let tile = Vars.world.tile(x, y);
-			let detector = this.nearestDetector(Vars.player.team(), x * 8, y * 8);
 			if(tile == null)return;
 
-			if(detector == null)
+			let count = 0;
+			let tiles = tile.getLinkedTilesAs(this, this.tempTiles);
+			for(let t of tiles.toArray())
 			{
-				this.drawPlaceText(Core.bundle.get("bar.detectorreq"), x, y, valid);
+				let radar = this.nearestRadar(Vars.player.team(), t.worldx(), t.worldy());
+				if(radar != null)
+				{
+					count++;
+					Drawf.dashLine(Vars.player.team().color, _x, _y, radar.x, radar.y);
+				}
+			}
+
+			if(count == 0)
+			{
+				this.drawPlaceText(Core.bundle.get("bar.radarreq"), x, y, valid);
 				return;
 			}
 
-			this.countOre(tile);
+			this.getOutput(tile);
 
 			if(this.returnItem != null)
 			{
 				let width = this.drawPlaceText(Core.bundle.formatFloat("bar.drillspeed", 60 / this.getDrillTime(this.returnItem) * this.returnCount, 2), x, y, valid);
-				let dx = x * Vars.tilesize + this.offset - width / 2 - 4
-				let dy = y * Vars.tilesize + this.offset + this.size * Vars.tilesize / 2 + 5
+				let dx = _x - width / 2 - 4;
+				let dy = _y + this.size * Vars.tilesize / 2 + 5;
 				let s = Vars.iconSmall / 4;
 				Draw.mixcol(Color.darkGray, 1);
 				Draw.rect(this.returnItem.fullIcon, dx, dy - 1, s, s);
@@ -64,9 +80,12 @@ function UndergroundDrill(name)
 			}
 			else
 			{
-				let to = tile.getLinkedTilesAs(this, this.tempTiles).find(t => this.getUnderDrop(t.overlay()) != null && (this.getUnderDrop(t.overlay()).hardness > this.tier || this.getUnderDrop(t.overlay()) == this.blockedItem));
-				let item = to == null ? null : to.overlay().getD();
-				if(item != null)this.drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, valid);
+				let blocked = tiles.find(t => {
+					let drop = this.getUnderDrop(t.overlay());
+					return drop != null && (drop.hardness > this.tier || drop == this.blockedItem || this.blockedItems.contains(drop))
+				})
+				if(blocked != null)
+					this.drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, valid);
 			}
 		},
 
@@ -75,23 +94,20 @@ function UndergroundDrill(name)
 			this.super$setStats();
 			this.stats.remove(Stat.drillTier);
 
-			var th = this;
-
 			this.stats.add(
 				Stat.drillTier,
 				customDrillables(
-					th.drillTime,
-					th.hardnessDrillMultiplier,
-					th.size * th.size,
-					th.drillMultipliers,
-					boolf(b => {
-						var drop = th.getUnderDrop(b);
-						return b instanceof OverlayFloor &&
-							typeof b.UOB === "function" &&
+					block.drillTime,
+					block.hardnessDrillMultiplier,
+					block.size * block.size,
+					block.drillMultipliers,
+					boolf(ov => {
+						var drop = block.getUnderDrop(ov);
+						return ov.UOB != null &&
 							drop != null &&
-							drop.hardness <= th.tier &&
-							drop != th.blockedItem &&
-							(Vars.indexer.isBlockPresent(b) || Vars.state.isMenu());
+							drop.hardness <= block.tier &&
+							(drop != block.blockedItem || !this.blockedItems.contains(drop)) &&
+							(Vars.indexer.isBlockPresent(ov) || Vars.state.isMenu());
 					}),
 					true
 				)
@@ -101,8 +117,10 @@ function UndergroundDrill(name)
 		canMine(tile)
 		{
 			if(tile == null || tile.block().isStatic())return false;
-			let drops = this.getUnderDrop(tile.overlay());
-			return drops != null && drops.hardness <= this.tier && drops != this.blockedItem;
+			let drop = this.getUnderDrop(tile.overlay());
+			return drop != null && 
+				drop.hardness <= this.tier &&
+				(drop != this.blockedItem || !this.blockedItems.contains(drop));
 		},
 
 		countOre(tile)
@@ -114,28 +132,21 @@ function UndergroundDrill(name)
 			this.itemArray.clear();
 
 			let tiles = tile.getLinkedTilesAs(this, this.tempTiles);
-
-			for(let other of tiles.toArray())
+			for(let t of tiles.toArray())
 			{
-				if(this.canMine(other) && (other.overlay() instanceof OverlayFloor) && (typeof other.overlay().UOB === "function"))
-					this.oreCount.increment(this.getUnderDrop(other.overlay()), 0, 1);
+				if(this.canMine(t))
+					this.oreCount.increment(this.getUnderDrop(t.overlay()), 0, 1);
 			}
 
 			let keys = this.oreCount.keys().toSeq();
-
 			for(let item of keys.toArray())this.itemArray.add(item);
 
-			let th = this
-
-			let comparator = new Packages.java.util.Comparator({
-				compare(item1, item2)
-				{
-					let type = java.lang.Boolean.compare(!item1.lowPriority, !item2.lowPriority);
-					if(type != 0)return type;
-					let amounts = java.lang.Integer.compare(th.oreCount.get(item1, 0), th.oreCount.get(item2, 0));
-					if(amounts != 0)return amounts;
-					return java.lang.Integer.compare(item1.id, item2.id);
-				}
+			let comparator = comp((item1, item2) => {
+				let type = boolComp(!item1.lowPriority, !item2.lowPriority);
+				if(type != 0)return type;
+				let amounts = intComp(block.oreCount.get(item1, 0), block.oreCount.get(item2, 0));
+				if(amounts != 0)return amounts;
+				return intComp(item1.id, item2.id);
 			});
 
 			if(this.itemArray.size == 0)return;
@@ -150,15 +161,20 @@ function UndergroundDrill(name)
 		{
 			this.countOre(tile);
 
-			return this.returnItem != null ? this.returnItem : Items.sand
+			let tiles = tile.getLinkedTilesAs(this, this.tempTiles);
+			for(let t of tiles.toArray())
+			{
+				if(this.isValidTarget(t))this.returnItem = this.returnItem != null ? this.returnItem : Items.sand;
+				if(this.returnItem == Items.sand)this.returnCount = 2
+			}
 		},
 
-		getUnderDrop(b)
+		getUnderDrop(ov)
 		{
-			return (b instanceof OverlayFloor) && (typeof b.UOB === "function") ? b.getD() : null
+			return ov.UOB != null ? ov.getD() : null;
 		},
 
-		nearestDetector(team, wx, wy)
+		nearestRadar(team, wx, wy)
 		{
 			return Vars.indexer.findTile(
 				team,
@@ -166,7 +182,7 @@ function UndergroundDrill(name)
 				wy,
 				999,
 				boolf(b =>
-					(typeof b.block.OR === "function") && 
+					b.block.OR != null && 
 					Mathf.within(wx, wy, b.x, b.y, b.range())
 				)
 			);
@@ -176,10 +192,7 @@ function UndergroundDrill(name)
 	let build = () => extend(Drill.DrillBuild, block, {
 		updateTile()
 		{
-			let x = this.tile.x
-			let y = this.tile.y
-
-			if(this.timer.get(block.timerDump, block.dumpTime))
+			if(this.timer.get(block.timerDump, block.dumpTime / this.timeScale))
 				this.dump(this.dominantItem != null && this.items.has(this.dominantItem) ? this.dominantItem : null);
 
 			if(this.dominantItem == null)return;
@@ -196,7 +209,7 @@ function UndergroundDrill(name)
 				this.progress += this.delta() * this.dominantItems * speed * this.warmup;
 
 				if(Mathf.chanceDelta(block.updateEffectChance * this.warmup))
-					block.updateEffect.at(x * 8 + 4 + Mathf.range(block.size * 2), y * 8 + 4 + Mathf.range(block.size * 2));
+					block.updateEffect.at(this.x + Mathf.range(block.size * 2), this.y + Mathf.range(block.size * 2));
 			}
 			else
 			{
@@ -207,11 +220,12 @@ function UndergroundDrill(name)
 
 			if(this.dominantItems > 0 && this.progress >= delay && this.items.total() < block.itemCapacity)
 			{
-				this.offload(this.dominantItem);
+				let amount = Math.floor(this.progress / delay);
+				for(let i = 0; i < amount; i++)this.offload(this.dominantItem);
 				this.progress %= delay;
 
 				if(this.wasVisible && Mathf.chanceDelta(block.drillEffectChance * this.warmup))
-					block.drillEffect.at(x * 8 + 4 + Mathf.range(block.drillEffectRnd), y * 8 + 4 + Mathf.range(block.drillEffectRnd), this.tileOn().floor().mapColor);
+					block.drillEffect.at(this.x + Mathf.range(block.drillEffectRnd), this.y + Mathf.range(block.drillEffectRnd), this.tileOn().floor().mapColor);
 			}
 		},
 
@@ -219,9 +233,10 @@ function UndergroundDrill(name)
 		{
 			this.super$onProximityUpdate();
 
-			this.dominantItem = block.getOutput(this.tile);
+			block.getOutput(this.tile);
+
+			this.dominantItem = block.returnItem;
 			this.dominantItems = block.returnCount;
-			if(block.returnCount == 0)this.dominantItems = 2
 		},
 
 		draw()
@@ -235,26 +250,29 @@ function UndergroundDrill(name)
 
 		efficiencyScale()
 		{
-			let x = this.tile.worldx()
-			let y = this.tile.worldy()
-			let other = block.nearestDetector(this.team, x, y);
-
-			return other != null && other.range() >= Mathf.dst(x, y, other.x, other.y) ? 1 : 0;
+			let tiles = this.tile.getLinkedTilesAs(this.block, this.block.tempTiles);
+			for(let t of tiles.toArray())
+			{
+				let radar = block.nearestRadar(this.team, t.worldx(), t.worldy());
+				if(radar != null)return 1
+			}
+			return 0
 		},
 
 		drawSelect()
 		{
-			let x = this.tile.worldx()
-			let y = this.tile.worldy()
-
 			this.super$drawSelect();
 
-			let d = block.nearestDetector(Vars.player.team(), x, y);
-			if(d != null)Drawf.dashLine(this.team.color, x + 4, y + 4, d.x, d.y);
+			let tiles = this.tile.getLinkedTilesAs(this.block, this.block.tempTiles);
+			for(let t of tiles.toArray())
+			{
+				let radar = block.nearestRadar(this.team, t.worldx(), t.worldy());
+				if(radar != null)Drawf.dashLine(this.team.color, this.x, this.y, radar.x, radar.y);
+			}
 		}
-	})
-	block.buildType = build
-	return block
+	});
+	block.buildType = build;
+	return block;
 }
 
 exports.UndergroundDrill = UndergroundDrill

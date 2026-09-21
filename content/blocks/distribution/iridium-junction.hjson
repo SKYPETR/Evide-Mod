@@ -1,8 +1,0 @@
-type: Junction
-category: distribution
-health: 50
-speed: 8
-capacity: 2
-requirements: [
-	iridium/2
-]

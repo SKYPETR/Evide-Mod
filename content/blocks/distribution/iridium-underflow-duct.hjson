@@ -1,0 +1,10 @@
+type: OverflowDuct
+category: distribution
+solid: false
+invert: true
+health: 80
+speed: 5
+requirements: [
+	iridium/6,
+  steel-plate/6
+]

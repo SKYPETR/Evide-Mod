@@ -6,39 +6,38 @@ Events.on(ClientLoadEvent, () => {
 	let nodeRoot = TechTree.nodeRoot;
 	let nodeProduce = TechTree.nodeProduce;
 
-	let root = Vars.content.block("evide-core-breeze")
+	let root = EBlocks.coreBreeze;
 
 	Vars.content.planet("evide-evide").techTree = new nodeRoot("@planet.evide-evide.name", root, () => {
 		new node(Vars.content.block("evide-iridium-duct"), () => {
-			new node(Vars.content.block("evide-iridium-junction"), () => {
-				new node(Vars.content.block("evide-iridium-router"), () => {
-					new node(Vars.content.block("evide-iridium-sorter"), () => {
-						new node(Vars.content.block("evide-iridium-inverted-sorter"), () => {})
-					})
-					new node(Vars.content.block("evide-iridium-duct-bridge"), () => {})
-				})
-			})
-		})
+			new node(Vars.content.block("evide-iridium-duct-router"), () => {
+				new node(Vars.content.block("evide-iridium-duct-bridge"), () => {});
+				new node(Vars.content.block("evide-iridium-overflow-duct"), () => {
+					new node(Vars.content.block("evide-iridium-underflow-duct"), () => {});
+					new node(Vars.content.block("evide-iridium-duct-unloader"), () => {});
+				});
+			});
+		});
 
 		new node(Vars.content.block("evide-steel-plasma-bore"), () => {
 			new node(EBlocks.oreRadarSmall, () => {
-				new node(EBlocks.overdriveDrill, () => {})
-			})
-		})
+				new node(EBlocks.overdriveDrill, () => {});
+			});
+		});
 
-		new node(Vars.content.block("evide-phosphorus-distiller"), () => {})
+		new node(Vars.content.block("evide-phosphorus-distiller"), () => {});
 
-		new node(Vars.content.block("evide-arsonist"), () => {})
+		new node(Vars.content.block("evide-arsonist"), () => {});
 
 		new nodeProduce(EItems.steelPlate, () => {
 			new nodeProduce(EItems.phosphorus, () => {
-				new nodeProduce(Vars.content.liquid("evide-liquid-phosphorus"), () => {})
-			})
-			new nodeProduce(EItems.iridium, () => {})
+				new nodeProduce(Vars.content.liquid("evide-liquid-phosphorus"), () => {});
+			});
+			new nodeProduce(EItems.iridium, () => {});
 			new nodeProduce(EItems.ice, () => {
-				new nodeProduce(Liquids.water, () => {})
-			})
-			new nodeProduce(Items.sand, () => {})
-		})
-	})
-})
+				new nodeProduce(Liquids.water, () => {});
+			});
+			new nodeProduce(Items.sand, () => {});
+		});
+	});
+});

@@ -1,8 +1,0 @@
-type: Sorter
-category: distribution
-squareSprite: false
-health: 60
-invert: true
-requirements: [
-  iridium/8
-]

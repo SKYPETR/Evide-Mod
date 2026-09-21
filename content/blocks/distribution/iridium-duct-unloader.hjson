@@ -1,0 +1,10 @@
+type: DirectionalUnloader
+category: distribution
+solid: false
+underBullets: true
+health: 100
+speed: 5
+requirements: [
+	iridium/10,
+  steel-plate/10
+]

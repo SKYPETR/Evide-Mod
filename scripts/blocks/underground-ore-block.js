@@ -22,22 +22,22 @@ function UndergroundOreBlock(name, item, depth)
 
 		getD()
 		{
-			return this.drop
+			return this.drop;
 		},
 
 		getDepth()
 		{
-			return this.dep
+			return this.dep;
 		},
 
 		getSDB()
 		{
-			return this.shouldDrawBase
+			return this.shouldDrawBase;
 		},
 
 		setSDB(value)
 		{
-			this.shouldDrawBase = value
+			this.shouldDrawBase = value;
 		},
 
 		load()
@@ -56,15 +56,15 @@ function UndergroundOreBlock(name, item, depth)
 			if(tile.overlay().getSDB() || Vars.state.isEditor())
 			{
 				let l = Draw.z();
-				Draw.z(Layer.light);
+				Draw.z(Layer.block);
 
 				this.super$drawBase(tile);
 
 				Draw.z(l);
 			}
 		}
-	})
-	return block
+	});
+	return block;
 }
 
 exports.UndergroundOreBlock = UndergroundOreBlock

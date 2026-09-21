@@ -6,8 +6,13 @@ let EItems = {
 
 	init()
 	{
+		this.iridium.healthScaling = 0.2
+		this.iridium.cost = 1.2
+
 		this.phosphorus.explosiveness = 1.2
 		this.phosphorus.flammability = 2
+
+		Items.sand.alwaysUnlocked = false
 	}
 }
 

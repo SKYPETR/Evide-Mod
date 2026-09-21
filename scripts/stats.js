@@ -10,7 +10,7 @@ function customDrillables(drillTime, drillMultiplier, size, multipliers, filter,
 				
 				for(let block of blocks.toArray())
 				{
-					let drop = underground ? (block instanceof OverlayFloor && typeof block.UOB === "function") ? block.getD() : null : block.itemDrop;
+					let drop = underground ? block.UOB != null ? block.getD() : null : block.itemDrop;
 					if(!filter.get(block))continue;
 					c.table(Styles.grayPanel, cons(b => {
 						b.image(block.uiIcon)

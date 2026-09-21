@@ -19,7 +19,7 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 		solid: true,
 		update: true,
 		configurable: true,
-		hasPower: true,
+		emitLight: true,
 		canOverdrive: false,
 
 		drawer: new DrawMulti([
@@ -38,7 +38,7 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 
 			this.fogRadius = new java.lang.Integer(this.range / 8);
 			this.clipSize = this.range * 2;
-			this.config(java.lang.Boolean, (r, b) => r.setSO(b));
+			this.config(java.lang.Boolean, (b, v) => b.setSO(v));
 		},
 
 		setStats()
@@ -52,7 +52,24 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 		{
 			this.super$drawPlace(x, y, rotation, valid);
 
-			Drawf.dashCircle(x * Vars.tilesize + this.offset, y * Vars.tilesize + this.offset, this.range, this.effectColor);
+			let _x = x * Vars.tilesize + this.offset;
+			let _y = y * Vars.tilesize + this.offset;
+
+			Drawf.dashCircle(_x, _y, this.range, this.effectColor);
+
+			Vars.indexer.eachBlock(
+				Vars.player.team(),
+				_x,
+				_y,
+				this.range,
+				boolf(b =>
+					b.block.UD != null
+				),
+				cons(b => {
+					Drawf.square(b.x, b.y, b.block.size * Vars.tilesize / 2 + 2, this.effectColor);
+					Drawf.dashLine(Vars.player.team().color, _x, _y, b.x, b.y);
+				})
+			);
 		},
 
 		icons()
@@ -65,10 +82,16 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 		showOres: true,
 		startTime: 0,
 		detectedOres: new Seq(),
+		lastFogRadius: 0,
 
 		setSO(value)
 		{
-			this.showOres = value
+			this.showOres = value;
+		},
+
+		fogRadius()
+		{
+			return (block.fogRadius - 0.1) * this.efficiency;
 		},
 
 		created()
@@ -109,7 +132,7 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 
 		radarRot()
 		{
-			return (this.curTime() * block.speed) % 360
+			return (this.curTime() * block.speed) % 360;
 		},
 
 		curTime()
@@ -119,25 +142,10 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 
 		updateTile()
 		{
-			if(this.canConsume() && block.drillEfficiencyMultiplier > 1)
+			if(this.fogRadius() != this.lastFogRadius)
 			{
-				Vars.indexer.eachBlock(
-					this,
-					this.range(),
-					boolf(other => 
-						other != null &&
-						other.block instanceof Drill &&
-						other.block.canOverdrive &&
-						typeof other.block.UD === "function"
-					),
-					cons(other => 
-						other.applyBoost(
-							other.efficiency *
-							block.drillEfficiencyMultiplier,
-							10
-						)
-					)
-				);
+				Vars.fogControl.forceUpdate(this.team, this);
+				this.lastFogRadius = this.fogRadius();
 			}
 		},
 
@@ -168,47 +176,81 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 
 		drawSelect()
 		{
-			Drawf.dashCircle(this.x, this.y, block.range, block.effectColor);
+			Drawf.dashCircle(this.x, this.y, this.range(), block.effectColor);
+
+			Vars.indexer.eachBlock(
+				this,
+				this.range(),
+				boolf(b =>
+					b.block.UD != null
+				),
+				cons(b => {
+					Drawf.square(b.x, b.y, b.block.size * Vars.tilesize / 2 + 2, block.effectColor);
+					Drawf.dashLine(this.team.color, this.x, this.y, b.x, b.y);
+				})
+			);
 		},
 
 		drawLight()
 		{
 			this.super$drawLight();
 
-			Drawf.light(this.x, this.y, block.range * (0.4 + (Mathf.absin(this.totalProgress(), 10, 0.9) * 0.12 + 1 - 0.12) * this.efficiency * 0.9), Tmp.c1.set(col), this.efficiency);
+			Drawf.light(
+				this.x,
+				this.y,
+				block.range * (0.4 + (Mathf.absin(this.totalProgress(), 10, 0.9) * 0.12 + 1 - 0.12) * this.potentialEfficiency * 0.9),
+				block.effectColor,
+				this.potentialEfficiency
+			);
+		},
+
+		circle(x, y, width, height, radius, cons)
+		{
+			for(let dx = Math.max(x - radius, 0); dx <= Math.min(x + radius, width - 1); dx++)
+			{
+				for(let dy = Math.max(y - radius, 0); dy <= Math.min(y + radius, height - 1); dy++)
+				{
+					if(Mathf.within(dx + 0.5, dy + 0.5, x, y, radius))
+						cons(Vars.world.rawTile(dx, dy));
+				}
+			}
 		},
 
 		locateOres(radius)
 		{
 			let hoverTile = Vars.world.tileWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
 
-			let th = this
+			let s = this
 
-			this.tile.circle(
+			this.circle(
+				this.tile.x + 1.5,
+				this.tile.y + 1.5,
+				Vars.world.width(),
+				Vars.world.height(),
 				radius / Vars.tilesize, 
-				cons(ore => {
-					if(ore != null && ore.overlay() != null && ore.overlay() instanceof OverlayFloor && typeof ore.overlay().UOB === "function")
+				ore => {
+					if(ore.overlay().UOB != null)
 					{
-						let angle = Mathf.angle(ore.x - th.tile.x, ore.y - th.tile.y);
-						let c1 = th.radarRot();
-						let c2 = th.radarRot() + block.radarCone;
+						let angle = Mathf.angle(ore.x - s.tile.x, ore.y - s.tile.y);
+						let c1 = s.radarRot();
+						let c2 = s.radarRot() + block.radarCone;
 						if(c2 >= 360 && angle < 180)angle += 360;
 
-						if(angle >= c1 && angle <= c2 && !th.detectedOres.contains(ore))
-							th.detectedOres.add(ore);
+						if(angle >= c1 && angle <= c2 && !s.detectedOres.contains(ore))
+							s.detectedOres.add(ore);
 					}
-				})
+				}
 			);
 
 			for(let ore of this.detectedOres.toArray())
 			{
-				if(ore.block() != Blocks.air || ore.overlay() == Blocks.air || block.tier < ore.overlay().getDepth())continue;
+				if(ore.overlay().UOB == null || ore.block() != Blocks.air || block.tier < ore.overlay().getDepth())continue;
 
-				let ov = ore.overlay()
+				let ov = ore.overlay();
 
 				let cond = true;
 
-				if(!this.showOres)ov.setSDB(true)
+				if(!this.showOres)ov.setSDB(true);
 				else
 				{
 					let angle = Mathf.angle(ore.x - this.tile.x, ore.y - this.tile.y);
@@ -216,20 +258,18 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 					let c2 = this.radarRot() + block.radarCone;
 					if(c2 >= 360 && angle < 180)angle += 360;
 
-					let inCone = (angle >= c1 && angle <= c2);
+					cond = (angle >= c1 && angle <= c2);
 
-					ov.setSDB(inCone)
-					cond = inCone
+					ov.setSDB(cond);
 				}
 
 				ov.drawBase(ore);
-				ov.setSDB(false)
+				ov.setSDB(false);
 
-				if(ore == hoverTile && ore.block() != null && cond)
+				if(ore == hoverTile && cond)
 				{
 					Draw.z(Layer.max);
-					Draw.alpha(1);
-					Draw.rect(ov.getD().uiIcon, ore.x * 8, ore.y * 8 + 8);
+					Draw.rect(ov.getD().uiIcon, ore.x * Vars.tilesize - 4, ore.y * Vars.tilesize + 4, Vars.iconSmall / 4, Vars.iconSmall / 4);
 				}
 			}
 		},
@@ -241,16 +281,13 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 			Vars.indexer.eachBlock(
 				this,
 				this.range(),
-				boolf(other =>
-					other != null &&
-					other.block instanceof Drill &&
-					other.enabled &&
-					other.potentialEfficiency > 0 &&
-					typeof other.block.UD === "function"
+				boolf(b =>
+					b.potentialEfficiency > 0 &&
+					b.block.UD != null
 				),
-				cons(other => {
-					Fx.circleColorSpark.at(other.x, other.y, Pal.orangeSpark);
-					Sounds.shieldBreakSmall.at(other);
+				cons(b => {
+					Fx.circleColorSpark.at(b.x, b.y, Pal.orangeSpark);
+					Sounds.shieldBreakSmall.at(b);
 				})
 			);
 		},
@@ -264,9 +301,9 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 		{
 			this.showOres = read.bool();
 		}
-	})
-	block.buildType = build
-	return block
+	});
+	block.buildType = build;
+	return block;
 }
 
 exports.OreRadar = OreRadar

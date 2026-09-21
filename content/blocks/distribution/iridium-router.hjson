@@ -1,6 +1,0 @@
-type: Router
-category: distribution
-health: 65
-requirements: [
-	iridium/2
-]

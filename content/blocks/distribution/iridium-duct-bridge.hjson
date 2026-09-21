@@ -1,9 +1,8 @@
 type: DuctBridge
 category: distribution
 squareSprite: false
-range: 5
-itemCapacity: 5
-health: 60
+range: 4
+health: 80
 requirements: [
-	iridium/8
+	iridium/12
 ]
