@@ -36,6 +36,7 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 			this.super$load();
 			this.drawer.load(this);
 
+			this.range = Math.floor(this.range / 8) * 8;
 			this.fogRadius = new java.lang.Integer(this.range / 8);
 			this.clipSize = this.range * 2;
 			this.config(java.lang.Boolean, (b, v) => b.setSO(v));

@@ -10,8 +10,8 @@ function customDrillables(drillTime, drillMultiplier, size, multipliers, filter,
 				
 				for(let block of blocks.toArray())
 				{
-					let drop = underground ? block.UOB != null ? block.getD() : null : block.itemDrop;
 					if(!filter.get(block))continue;
+					let drop = underground ? (block.UOB != null ? block.getD() : null) : block.itemDrop;
 					c.table(Styles.grayPanel, cons(b => {
 						b.image(block.uiIcon)
 						.size(40)

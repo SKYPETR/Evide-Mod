@@ -130,9 +130,6 @@ Events.on(ClientLoadEvent, () => {
 		currentChance = 0;
 	}
 
-	Vars.ui.content.show(Vars.content.block("evide-overdrive-drill"));
-	Vars.ui.content.hide();
-
 	Events.run(Trigger.update, () => {
 		let block = Vars.content.block("evide-overdrive-drill");
 		if(Vars.state.isPlaying())

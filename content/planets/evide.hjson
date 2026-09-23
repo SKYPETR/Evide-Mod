@@ -13,7 +13,7 @@ updateLighting: false
 sectorSeed: 69
 bloom: true
 alwaysUnlocked: true
-atmosphereColor: 4da6ffff
+atmosphereColor: 21375499
 iconColor: 4da6ff
 clearSectorOnLose: true
 allowWaves: true
