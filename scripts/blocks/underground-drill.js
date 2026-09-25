@@ -92,9 +92,8 @@ function UndergroundDrill(name)
 		setStats()
 		{
 			this.super$setStats();
-			this.stats.remove(Stat.drillTier);
 
-			this.stats.add(
+			this.stats.replace(
 				Stat.drillTier,
 				customDrillables(
 					block.drillTime,

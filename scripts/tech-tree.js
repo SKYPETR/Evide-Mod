@@ -19,7 +19,7 @@ Events.on(ClientLoadEvent, () => {
 			});
 		});
 
-		new node(Vars.content.block("evide-steel-plasma-bore"), () => {
+		new node(EBlocks.steelPlasmaBore, () => {
 			new node(EBlocks.oreRadarSmall, () => {
 				new node(EBlocks.overdriveDrill, () => {});
 			});

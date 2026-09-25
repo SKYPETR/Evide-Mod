@@ -158,7 +158,6 @@ function OreRadar(name, ran, radCone, spd, col, dem, tr)
 			if(this.canConsume() && this.team == Vars.player.team())
 			{
 				Draw.z(Layer.light);
-				Draw.alpha(0.6);
 				Lines.stroke(2.5, block.effectColor);
 
 				Draw.alpha(1 - (this.curTime() % 120) / 120);
